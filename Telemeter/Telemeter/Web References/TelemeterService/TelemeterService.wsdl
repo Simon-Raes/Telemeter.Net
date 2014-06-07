@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.telenet.be/TelemeterService/" name="TelemeterService" targetNamespace="http://www.telenet.be/TelemeterService/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.telenet.be/TelemeterService/">
+      <xsd:complexType name="RetrieveUsageRequestType">
+        <xsd:sequence>
+          <xsd:element name="UserId" type="xsd:string" />
+          <xsd:element name="Password" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="RetrieveUsageResponseType">
+        <xsd:sequence>
+          <xsd:element name="Ticket" type="tns:TicketType" />
+          <xsd:choice>
+            <xsd:element name="Volume" type="tns:VolumeType" />
+            <xsd:element name="FUP" type="tns:FUPType" />
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TicketType">
+        <xsd:sequence>
+          <xsd:element name="Timestamp" type="xsd:dateTime" />
+          <xsd:element name="ExpiryTimestamp" type="xsd:dateTime" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="VolumeType">
+        <xsd:sequence>
+          <xsd:element default="MB" name="Unit" type="tns:UnitType" />
+          <xsd:element name="Limit" type="xsd:nonNegativeInteger" />
+          <xsd:element name="TotalUsage" type="xsd:nonNegativeInteger" />
+          <xsd:element name="DailyUsageList" type="tns:DailyUsageListType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="DailyUsageListType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="DailyUsage" type="tns:DailyUsageType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="DailyUsageType">
+        <xsd:sequence>
+          <xsd:element name="Day" type="xsd:date" />
+          <xsd:element name="Usage" type="xsd:nonNegativeInteger" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="FUPType">
+        <xsd:sequence>
+          <xsd:element name="Period" type="tns:PeriodType" />
+          <xsd:element name="Usage" type="tns:UsageType" />
+          <xsd:element name="Status" type="tns:StatusType" />
+          <xsd:element name="StatusDescription" type="tns:StatusDescriptionType" />
+          <xsd:element minOccurs="0" name="Info" type="tns:InfoType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="PeriodType">
+        <xsd:sequence>
+          <xsd:element name="From" type="xsd:date" />
+          <xsd:element name="Till" type="xsd:date" />
+          <xsd:element name="CurrentDay" type="xsd:nonNegativeInteger" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="UsageType">
+        <xsd:sequence>
+          <xsd:element name="TotalUsage" type="xsd:decimal" />
+          <xsd:element name="MinUsageRemaining" type="xsd:decimal" />
+          <xsd:element name="MaxUsageRemaining" type="xsd:decimal" />
+          <xsd:element default="GB" name="Unit" type="tns:UnitType" />
+          <xsd:element name="LastUpdate" type="xsd:dateTime" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:simpleType name="StatusType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Vrij verbruik" />
+          <xsd:enumeration value="Grootverbuiker" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="StatusDescriptionType">
+        <xsd:sequence>
+          <xsd:element name="NL" type="xsd:string" />
+          <xsd:element name="FR" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="InfoType">
+        <xsd:sequence>
+          <xsd:element name="StartGrootverbruiker" type="xsd:date" />
+          <xsd:element name="StartVrijVerbruik" type="xsd:date" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:simpleType name="UnitType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="MB" />
+          <xsd:enumeration value="GB" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="TelemeterFaultType">
+        <xsd:sequence>
+          <xsd:element name="Code" type="xsd:string" />
+          <xsd:element name="Description" type="xsd:string" />
+          <xsd:element minOccurs="0" name="Ticket" type="tns:TicketType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="RetrieveUsageRequest" type="tns:RetrieveUsageRequestType" />
+      <xsd:element name="RetrieveUsageResponse" type="tns:RetrieveUsageResponseType" />
+      <xsd:element name="TelemeterFault" type="tns:TelemeterFaultType" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="RetrieveUsageRequest">
+    <wsdl:part name="RetrieveUsageRequest" element="tns:RetrieveUsageRequest" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveUsageResponse">
+    <wsdl:part name="RetrieveUsageResponse" element="tns:RetrieveUsageResponse" />
+  </wsdl:message>
+  <wsdl:message name="TelemeterFault">
+    <wsdl:part name="TelemeterFault" element="tns:TelemeterFault" />
+  </wsdl:message>
+  <wsdl:portType name="TelemeterService">
+    <wsdl:operation name="retrieveUsage">
+      <wsdl:input message="tns:RetrieveUsageRequest" />
+      <wsdl:output message="tns:RetrieveUsageResponse" />
+      <wsdl:fault name="TelemeterFault" message="tns:TelemeterFault" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TelemeterServiceSOAP" type="tns:TelemeterService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="retrieveUsage">
+      <soap:operation soapAction="http://www.telenet.be/TelemeterService/retrieveUsage" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="TelemeterFault">
+        <soap:fault use="literal" name="TelemeterFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="TelemeterService">
+    <wsdl:port name="TelemeterServiceSOAP" binding="tns:TelemeterServiceSOAP">
+      <soap:address location="https://t4t.services.telenet.be/TelemeterService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
